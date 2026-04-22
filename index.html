@@ -15,8 +15,9 @@
             padding: 20px; 
             margin: 0;
         }
-        h1 { margin-bottom: 20px; color: #f39c12; font-size: 24px; }
-        h2 { width: 100%; max-width: 400px; font-size: 16px; color: #888; margin: 20px 0 10px 5px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        h1 { margin-bottom: 20px; color: #f39c12; font-size: 28px; font-weight: 800; }
+        h2 { width: 100%; max-width: 400px; font-size: 14px; color: #aaa; margin: 25px 0 10px 5px; text-transform: uppercase; letter-spacing: 2px; }
         
         .grid { 
             display: grid; 
@@ -30,22 +31,34 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: linear-gradient(135deg, #f1c40f, #e67e22); 
             border: none; 
             padding: 18px 25px; 
-            border-radius: 15px; 
+            border-radius: 16px; 
             text-decoration: none; 
-            color: #000; 
+            color: white; 
             font-weight: bold; 
             font-size: 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: transform 0.1s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: transform 0.1s, filter 0.2s;
             -webkit-tap-highlight-color: transparent;
         }
         
-        .btn:active { transform: scale(0.96); opacity: 0.9; }
+        .btn:active { transform: scale(0.96); filter: brightness(1.2); }
         
-        .icon { font-size: 22px; }
+        .icon { font-size: 24px; }
+
+        /* Farveprofiler baseret på stationernes logoer */
+        .the-voice { background: linear-gradient(135deg, #e60000, #8b0000); } /* Rød */
+        .soft { background: linear-gradient(135deg, #00adef, #005d82); }      /* Lyseblå */
+        .nova { background: linear-gradient(135deg, #1d2a57, #3a53a4); }      /* Mørkeblå */
+        .radio100 { background: linear-gradient(135deg, #ff5000, #c43d00); }  /* Orange/Rød */
+        .popfm { background: linear-gradient(135deg, #ed008c, #9e005d); }     /* Pink */
+        
+        .pop-mix { background: linear-gradient(135deg, #662d91, #441e62); }   /* Lilla */
+        .top-100 { background: linear-gradient(135deg, #fbb03b, #d97e00); }   /* Guld */
+        .soft-modern { background: linear-gradient(135deg, #7ec9ac, #4d8c75); } /* Mint */
+        .soft-classic { background: linear-gradient(135deg, #5b7d87, #354a50); } /* Gråblå */
+
     </style>
 </head>
 <body>
@@ -54,40 +67,42 @@
 
     <h2>Hovedstationer</h2>
     <div class="grid">
-        <a href="https://live-bauerdk.sharp-stream.com/thevoice-premium_96.aac" class="btn">
-            <span>The Voice</span> <span class="icon">👑</span>
+        <a href="https://live-bauerdk.sharp-stream.com/thevoice-premium_96.aac" class="btn the-voice">
+            <span>The Voice</span> <span class="icon">🎤</span>
         </a>
-        <a href="https://live-bauerdk.sharp-stream.com/soft-premium_96.aac" class="btn">
-            <span>Soft</span> <span class="icon">👑</span>
+        <a href="https://live-bauerdk.sharp-stream.com/soft-premium_96.aac" class="btn soft">
+            <span>Soft</span> <span class="icon">☁️</span>
         </a>
-        <a href="https://live-bauerdk.sharp-stream.com/nova-premium_96.aac" class="btn">
-            <span>Nova</span> <span class="icon">👑</span>
+        <a href="https://live-bauerdk.sharp-stream.com/nova-premium_96.aac" class="btn nova">
+            <span>Nova</span> <span class="icon">✨</span>
         </a>
-        <a href="https://live-bauerdk.sharp-stream.com/radio100-premium_96.aac" class="btn">
-            <span>Radio 100</span> <span class="icon">👑</span>
+        <a href="https://live-bauerdk.sharp-stream.com/radio100-premium_96.aac" class="btn radio100">
+            <span>Radio 100</span> <span class="icon">💯</span>
         </a>
-        <a href="https://live-bauerdk.sharp-stream.com/popfm-premium_96.aac" class="btn">
-            <span>PopFM</span> <span class="icon">👑</span>
+        <a href="https://live-bauerdk.sharp-stream.com/popfm-premium_96.aac" class="btn popfm">
+            <span>PopFM</span> <span class="icon">📻</span>
         </a>
     </div>
 
     <h2>Specials & Mix</h2>
     <div class="grid">
-        <a href="https://live-bauerdk.sharp-stream.com/mix7-premium_96.aac" class="btn">
-            <span>Pop Mix</span> <span class="icon">👑</span>
+        <a href="https://live-bauerdk.sharp-stream.com/mix7-premium_96.aac" class="btn pop-mix">
+            <span>Pop Mix</span> <span class="icon">🕺</span>
         </a>
-        <a href="https://live-bauerdk.sharp-stream.com/RP25_premium_96.aac" class="btn">
-            <span>Top 100</span> <span class="icon">👑</span>
+        <a href="https://live-bauerdk.sharp-stream.com/RP25_premium_96.aac" class="btn top-100">
+            <span>Top 100</span> <span class="icon">🏆</span>
         </a>
-        <a href="https://live-bauerdk.sharp-stream.com/RP09_premium_96.aac" class="btn">
-            <span>Soft Modern</span> <span class="icon">👑</span>
+        <a href="https://live-bauerdk.sharp-stream.com/RP09_premium_96.aac" class="btn soft-modern">
+            <span>Soft Modern</span> <span class="icon">🌿</span>
         </a>
-        <a href="https://live-bauerdk.sharp-stream.com/RP08_premium_96.aac" class="btn">
-            <span>Soft Classic</span> <span class="icon">👑</span>
+        <a href="https://live-bauerdk.sharp-stream.com/RP08_premium_96.aac" class="btn soft-classic">
+            <span>Soft Classic</span> <span class="icon">🎻</span>
         </a>
     </div>
 
-    <p style="margin-top: 40px; color: #444; font-size: 12px;">Åbn denne side i Web Video Caster for at streame til Chromecast.</p>
+    <p style="margin-top: 40px; color: #666; font-size: 12px; text-align: center; max-width: 300px;">
+        Åbn denne side i <b>Web Video Caster</b> for at streame direkte til dit TV eller Chromecast.
+    </p>
 
 </body>
 </html>
