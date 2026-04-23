@@ -18,7 +18,7 @@
         }
         
         h1 { margin-bottom: 5px; color: #f39c12; font-size: 28px; font-weight: 800; }
-        .status-text { color: #aaa; font-size: 14px; margin-bottom: 20px; }
+        .status-text { color: #aaa; font-size: 14px; margin-bottom: 25px; height: 20px; }
         
         h2 { width: 100%; max-width: 400px; font-size: 14px; color: #aaa; margin: 25px 0 10px 5px; text-transform: uppercase; letter-spacing: 2px; }
         
@@ -42,16 +42,20 @@
             font-weight: bold; 
             font-size: 18px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            transition: transform 0.1s, filter 0.2s;
+            transition: all 0.2s ease;
             -webkit-tap-highlight-color: transparent;
-            text-align: left;
-            width: 100%;
         }
         
-        .btn:active { transform: scale(0.96); filter: brightness(1.1); }
-        .btn.playing { outline: 3px solid white; transform: scale(0.98); }
+        .btn:active { transform: scale(0.98); }
         
-        .icon { font-size: 24px; }
+        /* Indikator for når en station spiller */
+        .btn.playing { 
+            ring: 3px solid #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            transform: scale(1.02);
+        }
+
+        .play-icon { font-size: 20px; opacity: 0.8; }
 
         /* Farveprofiler */
         .nova { background: linear-gradient(135deg, #2ecc71, #27ae60); }
@@ -64,88 +68,94 @@
         .soft-modern { background: linear-gradient(135deg, #7ec9ac, #4d8c75); }
         .soft-classic { background: linear-gradient(135deg, #5b7d87, #354a50); }
 
-        /* Stop knap nederst */
-        #stopBtn {
-            margin-top: 20px;
-            background: #e11d48;
-            display: none; /* Skjult indtil noget spiller */
-        }
+        .footer-info { margin-top: 40px; color: #666; font-size: 12px; text-align: center; max-width: 300px; line-height: 1.5; }
     </style>
 </head>
 <body>
 
     <h1>Radio Player</h1>
-    <p id="now-playing" class="status-text">Vælg en station</p>
+    <p id="status" class="status-text">Klar til afspilning</p>
 
     <div class="grid">
-        <button onclick="playStation('https://live-bauerdk.sharp-stream.com/nova-premium_96.aac', 'Nova', this)" class="btn nova">
-            <span>Nova</span> <span class="icon">✨</span>
+        <button onclick="toggleRadio('https://live-bauerdk.sharp-stream.com/nova-premium_96.aac', 'Nova', this)" class="btn nova">
+            <span>Nova</span> <span class="play-icon">▶️</span>
         </button>
 
-        <button onclick="playStation('https://live-bauerdk.sharp-stream.com/radio100-premium_96.aac', 'Radio 100', this)" class="btn radio100">
-            <span>Radio 100</span> <span class="icon">💯</span>
+        <button onclick="toggleRadio('https://live-bauerdk.sharp-stream.com/radio100-premium_96.aac', 'Radio 100', this)" class="btn radio100">
+            <span>Radio 100</span> <span class="play-icon">▶️</span>
         </button>
 
-        <button onclick="playStation('https://live-bauerdk.sharp-stream.com/thevoice-premium_96.aac', 'The Voice', this)" class="btn the-voice">
-            <span>The Voice</span> <span class="icon">💬</span>
+        <button onclick="toggleRadio('https://live-bauerdk.sharp-stream.com/thevoice-premium_96.aac', 'The Voice', this)" class="btn the-voice">
+            <span>The Voice</span> <span class="play-icon">▶️</span>
         </button>
 
-        <button onclick="playStation('https://live-bauerdk.sharp-stream.com/soft-premium_96.aac', 'Soft', this)" class="btn soft">
-            <span>Soft</span> <span class="icon">☁️</span>
+        <button onclick="toggleRadio('https://live-bauerdk.sharp-stream.com/soft-premium_96.aac', 'Soft', this)" class="btn soft">
+            <span>Soft</span> <span class="play-icon">▶️</span>
         </button>
 
-        <button onclick="playStation('https://live-bauerdk.sharp-stream.com/popfm-premium_96.aac', 'PopFM', this)" class="btn popfm">
-            <span>PopFM</span> <span class="icon">🎤</span>
+        <button onclick="toggleRadio('https://live-bauerdk.sharp-stream.com/popfm-premium_96.aac', 'PopFM', this)" class="btn popfm">
+            <span>PopFM</span> <span class="play-icon">▶️</span>
         </button>
     </div>
 
     <h2>Specials & Mix</h2>
     <div class="grid">
-        <button onclick="playStation('https://live-bauerdk.sharp-stream.com/mix7-premium_96.aac', 'Pop Mix', this)" class="btn pop-mix">
-            <span>Pop Mix</span> <span class="icon">🕺</span>
+        <button onclick="toggleRadio('https://live-bauerdk.sharp-stream.com/mix7-premium_96.aac', 'Pop Mix', this)" class="btn pop-mix">
+            <span>Pop Mix</span> <span class="play-icon">▶️</span>
         </button>
-        <button onclick="playStation('https://live-bauerdk.sharp-stream.com/RP25_premium_96.aac', 'Top 100', this)" class="btn top-100">
-            <span>Top 100</span> <span class="icon">🏆</span>
+        <button onclick="toggleRadio('https://live-bauerdk.sharp-stream.com/RP25_premium_96.aac', 'Top 100', this)" class="btn top-100">
+            <span>Top 100</span> <span class="play-icon">▶️</span>
         </button>
-        <button onclick="playStation('https://live-bauerdk.sharp-stream.com/RP09_premium_96.aac', 'Soft Modern', this)" class="btn soft-modern">
-            <span>Soft Modern</span> <span class="icon">🌿</span>
+        <button onclick="toggleRadio('https://live-bauerdk.sharp-stream.com/RP09_premium_96.aac', 'Soft Modern', this)" class="btn soft-modern">
+            <span>Soft Modern</span> <span class="play-icon">▶️</span>
         </button>
-        <button onclick="playStation('https://live-bauerdk.sharp-stream.com/RP08_premium_96.aac', 'Soft Classic', this)" class="btn soft-classic">
-            <span>Soft Classic</span> <span class="icon">🎻</span>
+        <button onclick="toggleRadio('https://live-bauerdk.sharp-stream.com/RP08_premium_96.aac', 'Soft Classic', this)" class="btn soft-classic">
+            <span>Soft Classic</span> <span class="play-icon">▶️</span>
         </button>
     </div>
 
-    <button id="stopBtn" class="btn" onclick="stopAudio()">STOP AFSPILNING</button>
-
-    <p style="margin-top: 40px; color: #666; font-size: 12px; text-align: center; max-width: 300px;">
-        Åbn denne side i <b>Web Video Caster</b> for at streame direkte til din Chromecast.
+    <p class="footer-info">
+        Tryk på en station for at starte. Tryk igen for at stoppe.<br>
+        Optimerede til <b>Web Video Caster</b>.
     </p>
 
     <script>
         let currentAudio = new Audio();
-        const statusText = document.getElementById('now-playing');
-        const stopBtn = document.getElementById('stopBtn');
+        let currentUrl = '';
+        const statusElement = document.getElementById('status');
 
-        function playStation(url, name, element) {
-            // Stop eksisterende lyd
+        function toggleRadio(url, name, btn) {
+            const icon = btn.querySelector('.play-icon');
+
+            // Hvis vi trykker på den station, der allerede spiller -> STOP
+            if (currentUrl === url && !currentAudio.paused) {
+                currentAudio.pause();
+                resetUI();
+                statusElement.textContent = "Pause: " + name;
+                return;
+            }
+
+            // Hvis en anden station spiller -> STOP den først
             currentAudio.pause();
-            currentAudio.src = url;
-            currentAudio.play();
+            resetUI();
 
-            // Opdater UI
-            statusText.textContent = "Spiller nu: " + name;
-            stopBtn.style.display = "flex";
+            // Start den nye station
+            currentAudio.src = url;
+            currentAudio.play().catch(e => {
+                statusElement.textContent = "Fejl: Browseren blokerede lyden.";
+            });
             
-            // Fjern markering fra andre knapper
-            document.querySelectorAll('.btn').forEach(b => b.classList.remove('playing'));
-            element.classList.add('playing');
+            currentUrl = url;
+            btn.classList.add('playing');
+            icon.textContent = '⏸️';
+            statusElement.textContent = "Spiller nu: " + name;
         }
 
-        function stopAudio() {
-            currentAudio.pause();
-            statusText.textContent = "Vælg en station";
-            stopBtn.style.display = "none";
-            document.querySelectorAll('.btn').forEach(b => b.classList.remove('playing'));
+        function resetUI() {
+            document.querySelectorAll('.btn').forEach(b => {
+                b.classList.remove('playing');
+                b.querySelector('.play-icon').textContent = '▶️';
+            });
         }
     </script>
 
