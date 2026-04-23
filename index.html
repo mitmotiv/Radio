@@ -17,7 +17,7 @@
             --bg: #080808;
             --text-main: #ffffff;
             --text-dim: rgba(255, 255, 255, 0.6);
-            --accent: #e91e63;
+            --accent: #ff4757;
         }
 
         body {
@@ -34,7 +34,6 @@
 
         .container { width: 100%; max-width: 550px; }
 
-        /* Søgefunktion (Punkt 5) */
         .search-container {
             width: 100%;
             position: sticky;
@@ -50,21 +49,26 @@
             border-radius: 20px;
             color: white;
             font-family: inherit;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             box-sizing: border-box;
             outline: none;
-            transition: border 0.3s;
+            transition: all 0.3s;
         }
-        .search-input:focus { border-color: var(--text-dim); }
+        .search-input:focus { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); }
 
         .section-title {
             font-size: 10px;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: var(--text-dim);
-            margin: 25px 0 12px 5px;
+            margin: 30px 0 12px 5px;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        .section-title.fav-title { color: var(--accent); }
 
         .grid {
             display: grid;
@@ -76,42 +80,42 @@
         .btn {
             position: relative;
             background: rgba(var(--brand-color), 0.1);
-            border: 1px solid rgba(var(--brand-color), 0.2);
+            border: 1px solid rgba(var(--brand-color), 0.15);
             border-radius: 18px;
             padding: 12px 6px; 
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             min-height: 85px;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Favorit hjerte (Punkt 4) */
         .fav-heart {
             position: absolute;
-            top: 5px;
+            top: 6px;
             right: 8px;
-            font-size: 12px;
+            font-size: 14px;
             color: var(--text-dim);
-            opacity: 0.3;
+            opacity: 0.2;
             transition: 0.3s;
+            padding: 4px;
+            z-index: 10;
         }
         .btn.is-fav .fav-heart { opacity: 1; color: var(--accent); }
 
-        /* Loading Animation (Punkt 1) */
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
         .btn.loading { animation: pulse 1s infinite; border-color: white; }
 
         .btn .icon { font-size: 22px; margin-bottom: 4px; }
-        .btn span { font-size: 11px; font-weight: 500; text-align: center; line-height: 1.2; }
+        .btn span { font-size: 11px; font-weight: 500; text-align: center; line-height: 1.2; padding: 0 4px; }
 
         .btn.playing {
-            background: rgba(var(--brand-color), 0.3);
-            border-color: rgba(var(--brand-color), 0.8);
-            transform: scale(0.95);
+            background: rgba(var(--brand-color), 0.25);
+            border-color: rgba(var(--brand-color), 0.5);
+            transform: translateY(-2px);
         }
 
         /* BRAND FARVER */
@@ -149,15 +153,14 @@
         #current-label { font-size: 9px; text-transform: uppercase; color: var(--text-dim); font-weight: 700; letter-spacing: 1px; }
         #current-name { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px; }
 
-        /* Visualizer (Punkt 8) */
-        .visualizer { display: flex; align-items: flex-end; gap: 2px; height: 15px; }
-        .v-bar { width: 3px; background: white; border-radius: 1px; height: 3px; transition: 0.3s; }
-        .playing .v-bar { animation: bar-bounce 0.8s infinite alternate; }
+        .visualizer { display: flex; align-items: flex-end; gap: 2px; height: 15px; opacity: 0; transition: 0.3s; }
+        .visualizer.active { opacity: 1; }
+        .v-bar { width: 3px; background: white; border-radius: 1px; height: 3px; }
+        .active .v-bar { animation: bar-bounce 0.8s infinite alternate; }
         @keyframes bar-bounce { 0% { height: 3px; } 100% { height: 15px; } }
 
-        /* Volume Slider (Punkt 9) */
-        .volume-container { display: flex; align-items: center; gap: 10px; opacity: 0.7; }
-        .volume-container svg { width: 16px; fill: white; }
+        .volume-container { display: flex; align-items: center; gap: 10px; opacity: 0.6; }
+        .volume-container svg { width: 14px; fill: white; }
         .volume-slider {
             flex: 1;
             -webkit-appearance: none;
@@ -198,7 +201,6 @@
     <div class="search-container">
         <input type="text" class="search-input" id="searchInput" placeholder="Søg efter stationer..." aria-label="Søg radiostation">
     </div>
-
     <div id="station-list"></div>
 </div>
 
@@ -217,7 +219,6 @@
             <svg id="ctrl-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
     </div>
-    
     <div class="volume-container">
         <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
         <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="1" oninput="setVolume(this.value)" aria-label="Lydstyrke">
@@ -227,7 +228,6 @@
 <video id="audio-engine" playsinline x-webkit-airplay="allow"></video>
 
 <script>
-    // JSON Stationsobjekt (Punkt 3)
     const stations = [
         { id: 'nova', name: 'Nova', cat: 'Populære', icon: '✨', url: 'https://live-bauerdk.sharp-stream.com/nova-premium_96.aac', class: 'nova' },
         { id: 'r100', name: 'Radio 100', cat: 'Populære', icon: '💯', url: 'https://live-bauerdk.sharp-stream.com/radio100-premium_96.aac', class: 'r100' },
@@ -235,17 +235,14 @@
         { id: 'voice', name: 'The Voice', cat: 'Populære', icon: '🎤', url: 'https://live-bauerdk.sharp-stream.com/thevoice-premium_96.aac', class: 'voice' },
         { id: 'popfm', name: 'PopFM', cat: 'Populære', icon: '🎸', url: 'https://live-bauerdk.sharp-stream.com/popfm-premium_96.aac', class: 'pop' },
         { id: 'mix7', name: 'Mix 7', cat: 'Populære', icon: '🕺', url: 'https://live-bauerdk.sharp-stream.com/mix7-premium_96.aac', class: 'mix' },
-        
         { id: 'p5', name: 'P5', cat: 'DR Stationer', icon: '☕', url: 'https://drliveradio2.akamaized.net/hls/live/2118698/p5/playlist-320000.m3u8', class: 'dr' },
         { id: 'p4', name: 'P4', cat: 'DR Stationer', icon: '📍', url: 'https://drliveradio2.akamaized.net/hls/live/2118698/p4sjaelland/masterab.m3u8', class: 'dr' },
         { id: 'p3', name: 'P3', cat: 'DR Stationer', icon: '⚡', url: 'https://drliveradio2.akamaized.net/hls/live/2118698/p3/playlist-320000.m3u8', class: 'dr' },
         { id: 'p2', name: 'P2', cat: 'DR Stationer', icon: '🎻', url: 'https://drliveradio2.akamaized.net/hls/live/2118698/p2/playlist-320000.m3u8', class: 'dr' },
         { id: 'p1', name: 'P1', cat: 'DR Stationer', icon: '📰', url: 'https://drliveradio2.akamaized.net/hls/live/2118698/p1/playlist-320000.m3u8', class: 'dr' },
-
         { id: 'vinyl', name: 'Radio Vinyl', cat: 'Retro', icon: '📻', url: 'https://live-bauerdk.sharp-stream.com/RP01_premium_96.aac', class: 'vinyl' },
         { id: 'vhits', name: 'VinylHits', cat: 'Retro', icon: '💿', url: 'http://stream.vinylhits.dk/vinylmp3', class: 'vinyl' },
         { id: 'retro', name: 'Retro', cat: 'Retro', icon: '🎙️', url: 'https://streammp3.retro-radio.dk/retro-mp3', class: 'retro' },
-
         { id: 'wmix', name: 'Weekend Mix', cat: 'Mix', icon: '🍹', url: 'https://live-bauerdk.sharp-stream.com/RP27_premium_96.aac', class: 'mix' },
         { id: 'vix', name: 'The Voice Mix', cat: 'Mix', icon: '🎧', url: 'https://live-bauerdk.sharp-stream.com/RP16_premium_96.aac', class: 'voice' },
         { id: 'vtb', name: 'The Voice Throwback', cat: 'Mix', icon: '⏪', url: 'https://live-bauerdk.sharp-stream.com/RP17_premium_96.aac', class: 'voice' },
@@ -264,59 +261,52 @@
     const hls = new Hls();
     
     let favorites = JSON.parse(localStorage.getItem('radioFavs')) || [];
+    let currentStationId = null;
+    let activeStationName = ""; // Global variabel til titlen
 
-    // Render Funktion (Punkt 3, 4, 5, 10)
     function render(filter = '') {
         const list = document.getElementById('station-list');
         list.innerHTML = '';
-        
         const filtered = stations.filter(s => s.name.toLowerCase().includes(filter.toLowerCase()));
         
-        // Sortering: Favoritter øverst (Punkt 4)
-        filtered.sort((a, b) => {
-            const aFav = favorites.includes(a.id);
-            const bFav = favorites.includes(b.id);
-            return bFav - aFav;
-        });
+        const favStations = filtered.filter(s => favorites.includes(s.id));
+        if (favStations.length > 0) { renderSection(list, "⭐ Dine Favoritter", favStations, true); }
 
-        const categories = [...new Set(filtered.map(s => s.cat))];
-        
+        const categories = [...new Set(stations.map(s => s.cat))];
         categories.forEach(cat => {
-            const section = document.createElement('div');
-            section.innerHTML = `<div class="section-title">${cat}</div>`;
-            const grid = document.createElement('div');
-            grid.className = 'grid';
-            
-            filtered.filter(s => s.cat === cat).forEach(s => {
-                const isFav = favorites.includes(s.id);
-                const btn = document.createElement('div');
-                btn.className = `btn ${s.class} ${isFav ? 'is-fav' : ''}`;
-                btn.setAttribute('onclick', `handleBtnClick(event, '${s.url}', '${s.name}', this, '${s.id}')`);
-                btn.setAttribute('aria-label', `Afspil ${s.name}`); // Punkt 10
-                btn.innerHTML = `
-                    <div class="fav-heart" onclick="toggleFav(event, '${s.id}')">❤</div>
-                    <span class="icon">${s.icon}</span>
-                    <span>${s.name}</span>
-                `;
-                grid.appendChild(btn);
-            });
-            section.appendChild(grid);
-            list.appendChild(section);
+            const catStations = filtered.filter(s => s.cat === cat);
+            if (catStations.length > 0) { renderSection(list, cat, catStations, false); }
         });
+    }
+
+    function renderSection(parent, title, stationGroup, isFavSection) {
+        const section = document.createElement('div');
+        section.innerHTML = `<div class="section-title ${isFavSection ? 'fav-title' : ''}">${title}</div>`;
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+        stationGroup.forEach(s => {
+            const isFav = favorites.includes(s.id);
+            const isPlaying = currentStationId === s.id;
+            const btn = document.createElement('div');
+            btn.className = `btn ${s.class} ${isFav ? 'is-fav' : ''} ${isPlaying ? 'playing' : ''}`;
+            btn.setAttribute('onclick', `handleBtnClick(event, '${s.url}', '${s.name}', this, '${s.id}')`);
+            btn.innerHTML = `<div class="fav-heart" onclick="toggleFav(event, '${s.id}')">❤</div><span class="icon">${s.icon}</span><span>${s.name}</span>`;
+            grid.appendChild(btn);
+        });
+        section.appendChild(grid);
+        parent.appendChild(section);
     }
 
     function handleBtnClick(e, url, name, el, id) {
         if (e.target.className === 'fav-heart') return;
+        currentStationId = id;
+        activeStationName = name;
         play(url, name, el);
     }
 
     function toggleFav(e, id) {
         e.stopPropagation();
-        if (favorites.includes(id)) {
-            favorites = favorites.filter(f => f !== id);
-        } else {
-            favorites.push(id);
-        }
+        favorites = favorites.includes(id) ? favorites.filter(f => f !== id) : [...favorites, id];
         localStorage.setItem('radioFavs', JSON.stringify(favorites));
         render(document.getElementById('searchInput').value);
     }
@@ -324,56 +314,46 @@
     function play(url, name, el) {
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('playing', 'loading'));
         el.classList.add('loading');
-        
         nameLabel.firstChild.textContent = name + " ";
-        statusLabel.textContent = "Forbinder...";
+        statusLabel.textContent = "Opretter forbindelse...";
+        
+        // SÆT TIMEGLAS HER
         document.title = "⌛ " + name;
 
-        // HLS.js logik (Punkt 2)
         if (url.includes('m3u8')) {
-            if (Hls.isSupported()) {
-                hls.loadSource(url);
-                hls.attachMedia(engine);
-            } else if (engine.canPlayType('application/vnd.apple.mpegurl')) {
-                engine.src = url;
-            }
-        } else {
-            hls.detachMedia();
-            engine.src = url;
-        }
+            if (Hls.isSupported()) { hls.loadSource(url); hls.attachMedia(engine); }
+            else if (engine.canPlayType('application/vnd.apple.mpegurl')) { engine.src = url; }
+        } else { hls.detachMedia(); engine.src = url; }
 
-        engine.play().catch(e => {
-            statusLabel.textContent = "Klik på Play";
-            el.classList.remove('loading');
-        });
-
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({ title: name, artist: 'Radio Danmark Pro' });
-        }
+        engine.play().catch(() => { statusLabel.textContent = "Klik på Play"; el.classList.remove('loading'); });
+        if ('mediaSession' in navigator) { navigator.mediaSession.metadata = new MediaMetadata({ title: name, artist: 'Radio Danmark Pro' }); }
     }
 
-    function togglePlay() {
-        engine.paused ? engine.play() : engine.pause();
-    }
-
+    function togglePlay() { engine.paused ? engine.play() : engine.pause(); }
     function setVolume(val) { engine.volume = val; }
 
-    // Audio Events (Punkt 1, 7, 8)
+    // RETTELSE HER: Skift fra timeglas til Play-ikon
     engine.onplaying = () => {
-        document.querySelector('.btn.loading')?.classList.replace('loading', 'playing');
+        const loadingBtn = document.querySelector('.btn.loading');
+        if (loadingBtn) loadingBtn.classList.replace('loading', 'playing');
         statusLabel.textContent = "Spiller nu";
-        viz.classList.add('playing');
+        viz.classList.add('active');
         updateIcon(true);
+        // OPDATER TITEL TIL PLAY
+        document.title = "▶ " + activeStationName;
     };
 
     engine.onpause = () => {
-        viz.classList.remove('playing');
+        viz.classList.remove('active');
         updateIcon(false);
+        // NULSTIL TITEL NÅR PAUSET
+        document.title = "Radio Danmark Pro";
     };
 
-    engine.onerror = () => { // Punkt 7
-        alert('Stationen er midlertidigt utilgængelig. Prøv en anden.');
+    engine.onerror = () => {
+        alert('Streamen kunne ikke indlæses.');
         statusLabel.textContent = "Fejl i stream";
+        document.title = "Radio Danmark Pro";
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('loading', 'playing'));
     };
 
@@ -384,8 +364,6 @@
     }
 
     document.getElementById('searchInput').oninput = (e) => render(e.target.value);
-
-    // Initial kørsel
     render();
 </script>
 
