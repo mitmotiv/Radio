@@ -169,10 +169,7 @@
 
         .volume-container { display: flex; align-items: center; gap: 12px; }
         .volume-container svg { width: 18px; fill: white; opacity: 0.6; cursor: pointer; transition: 0.2s; }
-        .volume-container.is-ios .volume-slider { opacity: 0.3; pointer-events: none; }
-        .ios-notice { display: none; font-size: 9px; color: var(--accent); margin-top: 4px; text-align: center; width: 100%; }
-        .is-ios .ios-notice { display: block; }
-
+        .volume-container svg:hover { opacity: 1; }
         .volume-slider {
             flex: 1;
             -webkit-appearance: none;
@@ -207,7 +204,7 @@
         .play-btn:active { transform: scale(0.9); }
         .play-btn svg { fill: black; width: 24px; }
 
-        #audio-engine { display: none; }
+        #media-engine-container { display: none; }
     </style>
 </head>
 <body>
@@ -234,14 +231,13 @@
             <svg id="ctrl-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
     </div>
-    <div class="volume-container" id="vol-cont">
+    <div class="volume-container">
         <svg id="mute-icon" onclick="toggleMute()" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
         <input type="range" class="volume-slider" id="vol-slider" min="0" max="1" step="0.01" value="1" oninput="setVolume(this.value)" aria-label="Lydstyrke">
-        <div class="ios-notice">Brug knapperne på siden af din iPhone</div>
     </div>
 </div>
 
-<audio id="audio-engine" playsinline x-webkit-airplay="allow"></audio>
+<div id="media-engine-container"></div>
 
 <script>
     const stations = [
@@ -269,27 +265,37 @@
         { id: 'scla', name: 'Soft Classic', cat: 'Mix', icon: '🎼', url: 'https://live-bauerdk.sharp-stream.com/RP08_premium_96.aac', class: 'soft' }
     ];
 
-    const engine = document.getElementById('audio-engine');
+    // DETEKTION AF WEB VIDEO CASTER
+    const isWebVideoCaster = /WebVideoCaster/i.test(navigator.userAgent);
+    const engineContainer = document.getElementById('media-engine-container');
+    
+    // Opret enten video eller audio tag baseret på miljø
+    const engine = document.createElement(isWebVideoCaster ? 'video' : 'audio');
+    engine.id = 'audio-engine';
+    engine.setAttribute('playsinline', '');
+    engine.setAttribute('x-webkit-airplay', 'allow');
+    engineContainer.appendChild(engine);
+
     const ctrlIcon = document.getElementById('ctrl-icon');
     const nameLabel = document.getElementById('current-name');
     const statusLabel = document.getElementById('current-label');
     const volSlider = document.getElementById('vol-slider');
     const muteIcon = document.getElementById('mute-icon');
     const viz = document.getElementById('viz');
-    const volCont = document.getElementById('vol-cont');
     
     let hls = new Hls();
     let favorites = JSON.parse(localStorage.getItem('radioFavs')) || [];
     let currentStationId = null;
     let activeStationName = "Radio Danmark Pro";
 
-    // iOS Check
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    if (isIOS) volCont.classList.add('is-ios');
-
     const savedVol = localStorage.getItem('radioVol') || 1;
     engine.volume = savedVol;
     volSlider.value = savedVol;
+
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', () => engine.play());
+        navigator.mediaSession.setActionHandler('pause', () => engine.pause());
+    }
 
     function render(filter = '') {
         const list = document.getElementById('station-list');
@@ -341,31 +347,28 @@
     function play(url, name, el) {
         hls.detachMedia();
         hls.destroy();
-        
+        hls = new Hls();
+
         document.querySelectorAll('.btn').forEach(b => b.classList.remove('playing', 'loading'));
         el.classList.add('loading');
         
         nameLabel.firstChild.textContent = name + " ";
-        statusLabel.textContent = "Opretter forbindelse...";
+        statusLabel.textContent = isWebVideoCaster ? "Klargør Video Cast..." : "Opretter forbindelse...";
         document.title = "⌛ " + name;
 
-        // RETTELSE FOR AIRPLAY: Prioritér Native HLS (Safari) over hls.js
         if (url.includes('m3u8')) {
-            if (engine.canPlayType('application/vnd.apple.mpegurl')) {
-                // Her bruger vi Safari's egen afspiller - BEDST TIL AIRPLAY
-                engine.src = url;
-            } else if (Hls.isSupported()) {
-                // Chrome/Android fallback
-                hls = new Hls();
+            if (Hls.isSupported()) {
                 hls.loadSource(url);
                 hls.attachMedia(engine);
+            } else if (engine.canPlayType('application/vnd.apple.mpegurl')) {
+                engine.src = url;
             }
         } else {
             engine.src = url;
         }
 
         engine.play().catch(() => { 
-            statusLabel.textContent = "Klik på Play for at starte"; 
+            statusLabel.textContent = "Tryk Play for at starte"; 
             el.classList.remove('loading'); 
         });
 
@@ -379,22 +382,17 @@
     }
 
     function togglePlay() { 
-        if (!engine.src && (!hls || !hls.url)) {
-            statusLabel.textContent = "Vælg en station først";
-            return;
-        }
+        if (!engine.src && !hls.url) return;
         engine.paused ? engine.play() : engine.pause(); 
     }
 
     function setVolume(val) { 
-        if (isIOS) return; // Forhindrer fejl i konsollen på iOS
         engine.volume = val; 
         localStorage.setItem('radioVol', val);
         updateMuteIcon(val == 0);
     }
 
     function toggleMute() {
-        if (isIOS) return;
         engine.muted = !engine.muted;
         updateMuteIcon(engine.muted);
     }
@@ -431,8 +429,7 @@
     }
 
     document.getElementById('searchInput').oninput = (e) => render(e.target.value);
-    
-    window.onunload = () => { if(hls) hls.destroy(); };
+    window.onunload = () => hls.destroy();
 
     render();
 </script>
