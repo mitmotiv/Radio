@@ -167,14 +167,8 @@
         .play-btn { width: 54px; height: 54px; border-radius: 50%; background: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .play-btn svg { fill: black; width: 24px; }
 
-        /* SKJUL VIDEOEN HELT FOR APPLE TV UI */
-        #audio-engine { 
-            position: absolute;
-            top: 0; left: 0;
-            width: 1px; height: 1px;
-            opacity: 0.01;
-            pointer-events: none;
-        }
+        /* SKJUL LYDMOTOREN */
+        #audio-engine { display: none; }
     </style>
 </head>
 <body>
@@ -207,12 +201,7 @@
     </div>
 </div>
 
-<video id="audio-engine" 
-       playsinline 
-       webkit-playsinline 
-       x-webkit-airplay="allow" 
-       x-apple-airplay-video-type="audio"
-       style="visibility: hidden;"></video>
+<audio id="audio-engine" preload="auto" x-webkit-airplay="allow"></audio>
 
 <script>
     const stations = [
@@ -251,15 +240,14 @@
     let currentStationId = null;
     let activeStationName = "";
 
-    // Gør MediaSession mere aggressiv
     function updateMetadata(name) {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: name,
                 artist: 'Radio Danmark Pro',
+                album: 'Live Radio Stream',
                 artwork: [{ src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Logo-de-World-Hits-Radio.png/960px-Logo-de-World-Hits-Radio.png', sizes: '512x512', type: 'image/png' }]
             });
-            // Tving Apple TV til at forstå det er en AUDIO stream
             navigator.mediaSession.playbackState = "playing";
         }
     }
@@ -308,14 +296,15 @@
 
         if (url.includes('m3u8')) {
             if (Hls.isSupported()) {
-                // Konfigurer til kun at håndtere lyd-streams for at hjælpe AirPlay
                 hls = new Hls({ 
-                    enableWorker: true, 
-                    altAudioTrackSelection: true 
+                    enableWorker: true,
+                    // Optimer til lyd-only HLS
+                    defaultAudioCodec: 'mp4a.40.2'
                 });
                 hls.loadSource(url);
                 hls.attachMedia(engine);
-            } else {
+            } else if (engine.canPlayType('application/vnd.apple.mpegurl')) {
+                // Native support for Safari og AirPlay lyd-handoff
                 engine.src = url;
             }
         } else {
@@ -353,7 +342,6 @@
 
     document.getElementById('searchInput').oninput = (e) => render(e.target.value);
     
-    // Init session handlers
     if ('mediaSession' in navigator) {
         navigator.mediaSession.setActionHandler('play', () => engine.play());
         navigator.mediaSession.setActionHandler('pause', () => engine.pause());
