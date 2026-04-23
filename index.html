@@ -63,9 +63,49 @@
 </head>
 <body>
 
-    <h1>Radio Dashboard</h1>
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <title>The Voice Radio Player</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f4f4f4; }
+        .player-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #e11d48;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .player-btn:hover { transform: scale(1.05); background-color: #be123c; }
+    </style>
+</head>
+<body>
 
-    <h2>Hovedstationer</h2>
+    <button id="playBtn" class="player-btn">Afspil Radio</button>
+
+    <script>
+        const audio = new Audio('https://live-bauerdk.sharp-stream.com/thevoice-premium_96.aac');
+        const btn = document.getElementById('playBtn');
+
+        btn.addEventListener('click', function() {
+            if (audio.paused) {
+                audio.play();
+                btn.textContent = 'Stop Radio';
+            } else {
+                audio.pause();
+                btn.textContent = 'Afspil Radio';
+            }
+        });
+    </script>
+
+</body>
+</html>
+    
     <div class="grid">
         <a href="https://live-bauerdk.sharp-stream.com/nova-premium_96.aac" class="btn nova">
             <span>Nova</span> <span class="icon">✨</span>
